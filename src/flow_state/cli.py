@@ -18,7 +18,7 @@ from typing import Annotated
 import typer
 
 from flow_state._version import __version__
-from flow_state.io import read_config, write_json
+from flow_state.io import read_config, write_flow_conditions_dat, write_json
 from flow_state.solvers import solve
 
 # --------------------------------------------------
@@ -42,6 +42,8 @@ cli = typer.Typer(
     help="Compute flow state",
     # disable shell completion command (not needed for this rudimentary cli)
     add_completion=False,
+    # show help when no command is given
+    no_args_is_help=True,
 )
 
 
@@ -248,6 +250,41 @@ def cmd_solve(
             help="Altitude unit (m, ft, km)",
         ),
     ] = None,
+    pres: Annotated[
+        float | None,
+        typer.Option(
+            "--pres",
+            help="Static pressure (default: Pa)",
+        ),
+    ] = None,
+    pres_unit: Annotated[
+        str | None,
+        typer.Option(
+            "--pres-unit",
+            help="Static pressure unit (Pa, psi, atm, bar)",
+        ),
+    ] = None,
+    temp: Annotated[
+        float | None,
+        typer.Option(
+            "--temp",
+            help="Static temperature (default: K)",
+        ),
+    ] = None,
+    temp_unit: Annotated[
+        str | None,
+        typer.Option(
+            "--temp-unit",
+            help="Static temperature unit (K, C, F, R)",
+        ),
+    ] = None,
+    re1: Annotated[
+        float | None,
+        typer.Option(
+            "--re1",
+            help="Unit Reynolds number [1/m]",
+        ),
+    ] = None,
     gas: Annotated[
         str | None,
         typer.Option(
@@ -285,6 +322,13 @@ def cmd_solve(
             help="Output file (JSON). If not specified, no file is written.",
         ),
     ] = None,
+    dat: Annotated[
+        bool,
+        typer.Option(
+            "--dat",
+            help="Write legacy .dat file (flow_conditions.dat).",
+        ),
+    ] = False,
     quiet: Annotated[
         bool,
         typer.Option(
@@ -299,10 +343,11 @@ def cmd_solve(
     Examples:
         flow-state solve --mach 6 --pres-stag 140 --pres-stag-unit psi --temp-stag 420
         flow-state solve --mach 7 --altitude 25000
+        flow-state solve --mach 8 --re1 10e6 --temp 55
         flow-state solve --config myconfig.toml
     """
     # Check if any direct options are provided
-    has_direct_options = any([mach, pres_stag, temp_stag, altitude])
+    has_direct_options = any([mach, pres_stag, temp_stag, altitude, pres, temp, re1])
 
     if has_direct_options:
         # Build kwargs from direct options
@@ -321,6 +366,18 @@ def cmd_solve(
                 kwargs["altitude"] = (altitude, altitude_unit)
             else:
                 kwargs["altitude"] = altitude
+        if pres is not None:
+            if pres_unit:
+                kwargs["pres"] = (pres, pres_unit)
+            else:
+                kwargs["pres"] = pres
+        if temp is not None:
+            if temp_unit:
+                kwargs["temp"] = (temp, temp_unit)
+            else:
+                kwargs["temp"] = temp
+        if re1 is not None:
+            kwargs["re1"] = re1
         if gas is not None:
             kwargs["gas"] = gas
         if atm is not None:
@@ -352,6 +409,12 @@ def cmd_solve(
     if output:
         write_json(state, output)
         typer.echo(f"Wrote {output}")
+
+    # write legacy .dat output if requested
+    if dat:
+        dat_path = Path("flow_conditions.dat")
+        write_flow_conditions_dat(state, dat_path)
+        typer.echo(f"Wrote {dat_path}")
 
     # print summary unless quiet
     if not quiet:
