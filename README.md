@@ -97,10 +97,6 @@ contributors can focus on the physics rather than inventing formatting rules.
 | [Ruff](https://docs.astral.sh/ruff/) | Automated linting and formatting | Enforces PEP 8 compliance automatically |
 | [typing / TYPE_CHECKING](https://docs.python.org/3/library/typing.html#typing.TYPE_CHECKING) | Type hints for IDE support and static analysis | Python standard library |
 
-These aren't arbitrary choices — they are the most widely adopted standards in
-the scientific Python ecosystem (NumPy, SciPy, scikit-learn, etc.), which means
-any Python developer will already be familiar with them.
-
 ## Releasing
 
 This project uses [Semantic Versioning](https://semver.org/) (`vMAJOR.MINOR.PATCH`):
