@@ -15,8 +15,8 @@ pip install flow-state-calculator
 Clone the repository and install in editable mode:
 
 ```bash
-git clone https://github.com/uahypersonics/flow_state.git
-cd flow_state
+git clone https://github.com/uahypersonics/flow-state.git
+cd flow-state
 pip install -e .
 ```
 

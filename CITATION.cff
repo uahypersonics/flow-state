@@ -8,8 +8,8 @@ authors:
     given-names: "Christoph"
     affiliation: "University of Arizona"
     orcid: "https://orcid.org/0000-0002-0956-000X"
-repository-code: "https://github.com/uahypersonics/flow_state"
-url: "https://uahypersonics.github.io/flow_state"
+repository-code: "https://github.com/uahypersonics/flow-state"
+url: "https://uahypersonics.github.io/flow-state"
 license: BSD-3-Clause
 keywords:
   - compressible flow

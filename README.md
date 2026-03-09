@@ -2,10 +2,10 @@
 
 Compressible flow state calculations for Python.
 
-[![Test](https://github.com/uahypersonics/flow_state/actions/workflows/test.yml/badge.svg)](https://github.com/uahypersonics/flow_state/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/uahypersonics/flow_state/branch/main/graph/badge.svg)](https://codecov.io/gh/uahypersonics/flow_state)
+[![Test](https://github.com/uahypersonics/flow-state/actions/workflows/test.yml/badge.svg)](https://github.com/uahypersonics/flow-state/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/uahypersonics/flow-state/branch/main/graph/badge.svg)](https://codecov.io/gh/uahypersonics/flow-state)
 [![PyPI](https://img.shields.io/pypi/v/flow-state-calculator)](https://pypi.org/project/flow-state-calculator/)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://uahypersonics.github.io/flow_state/)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://uahypersonics.github.io/flow-state/)
 [![Webapp](https://img.shields.io/badge/webapp-streamlit-red)](https://flow-state-calculator.streamlit.app/)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-≥3.11-blue.svg)](https://www.python.org/downloads/)
@@ -69,7 +69,7 @@ state = solve(mach=2, altitude=10000, atm=atmosphere.CIRA86(latitude=70, month=1
 
 ## Documentation
 
-Full documentation: https://uahypersonics.github.io/flow_state
+Full documentation: https://uahypersonics.github.io/flow-state
 
 ## Citation
 
@@ -79,7 +79,7 @@ If you use `flow_state` in your research, please cite it:
 @software{flow_state,
   author = {Hader, Christoph},
   title = {flow\_state: Compressible Flow State Calculations},
-  url = {https://github.com/uahypersonics/flow_state},
+  url = {https://github.com/uahypersonics/flow-state},
   year = {2026}
 }
 ```
@@ -128,7 +128,7 @@ The GitHub Actions workflow will automatically build and publish to PyPI via Tru
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chader2811"><img src="https://avatars.githubusercontent.com/u/57595181?v=4?s=100" width="100px;" alt="chader2811"/><br /><sub><b>chader2811</b></sub></a><br /><a href="https://github.com/uahypersonics/flow_state/commits?author=chader2811" title="Code">💻</a> <a href="https://github.com/uahypersonics/flow_state/commits?author=chader2811" title="Documentation">📖</a> <a href="#design-chader2811" title="Design">🎨</a> <a href="#ideas-chader2811" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-chader2811" title="Maintenance">🚧</a> <a href="#data-chader2811" title="Data">🔣</a> <a href="https://github.com/uahypersonics/flow_state/commits?author=chader2811" title="Tests">⚠️</a> <a href="#example-chader2811" title="Examples">💡</a> <a href="#infra-chader2811" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chader2811"><img src="https://avatars.githubusercontent.com/u/57595181?v=4?s=100" width="100px;" alt="chader2811"/><br /><sub><b>chader2811</b></sub></a><br /><a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Code">💻</a> <a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Documentation">📖</a> <a href="#design-chader2811" title="Design">🎨</a> <a href="#ideas-chader2811" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-chader2811" title="Maintenance">🚧</a> <a href="#data-chader2811" title="Data">🔣</a> <a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Tests">⚠️</a> <a href="#example-chader2811" title="Examples">💡</a> <a href="#infra-chader2811" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     </tr>
   </tbody>
 </table>
