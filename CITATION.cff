@@ -10,6 +10,7 @@ authors:
     orcid: "https://orcid.org/0000-0002-0956-000X"
 repository-code: "https://github.com/uahypersonics/flow-state"
 url: "https://uahypersonics.github.io/flow-state"
+doi: "10.5281/zenodo.18926471"
 license: BSD-3-Clause
 keywords:
   - compressible flow
