@@ -31,9 +31,7 @@ Sample Trajectory 1: HIFIRE-1 Flight Experiment 2007 (Kimmel)
 
 Sample Trajectory 2
 
-<<<<<<< HEAD
 ![Sample Trajectory 2](../assets/re1_stort.png)
-=======
 
 The figures were generated with:
 
@@ -41,4 +39,3 @@ The figures were generated with:
 python scripts/test_trajectory_1_calculation.py
 python scripts/stort_trajectory_reynolds_number_comparison.py
 ```
->>>>>>> 9365fccdd56dc9519ee782ed1426fb8645f177a0
