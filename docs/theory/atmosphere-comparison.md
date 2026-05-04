@@ -3,6 +3,10 @@
 !!! warning "Under Construction"
     This page is incomplete.
 
+## Atmosphere Model Temperature Comparison
+
+## Atmosphere Model Density Comparison
+
 ![Atmosphere model comparison for density](../assets/atmosphere_density_comparison.png)
 
 ![CIRA86 latitude grid](../assets/cira86_latitude_grid.png)
@@ -16,5 +20,8 @@ python scripts/generate_atmosphere_plots.py   # T, p, rho comparison
 python scripts/generate_latitude_grid.py       # CIRA86 latitude schematic
 ```
 
-## Sample Trajectory Calculation
+## Sample Trajectory Calculation 
+Sample Trajectory 1
 ![Sample Trajectory 1](../assets/reynolds_number_comparison.png)
+
+Sample Trajectory 2
