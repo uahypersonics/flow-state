@@ -3,7 +3,11 @@
 !!! warning "Under Construction"
     This page is incomplete.
 
-![Atmosphere model comparison](../assets/atmosphere_comparison.png)
+## Atmosphere Model Temperature Comparison
+
+## Atmosphere Model Density Comparison
+
+![Atmosphere model comparison for density](../assets/atmosphere_density_comparison.png)
 
 ![Temperature comparison](../assets/atmosphere_models_temp.png)
 
@@ -17,3 +21,11 @@ The figures were generated with:
 python scripts/temp_graph_atmosphere_models.py   # T
 python scripts/generate_latitude_grid.py       # CIRA86 latitude schematic
 ```
+
+## Sample Trajectory Calculation
+
+Sample Trajectory 1: HIFIRE-1 Flight Experiment 2007 (Kimmel)
+
+![Sample Trajectory 1](../assets/reynolds_number_comparison.png)
+
+Sample Trajectory 2
