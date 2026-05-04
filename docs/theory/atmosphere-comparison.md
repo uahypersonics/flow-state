@@ -22,6 +22,7 @@ python scripts/generate_latitude_grid.py       # CIRA86 latitude schematic
 
 ## Sample Trajectory Calculation 
 Sample Trajectory 1
+
 ![Sample Trajectory 1](../assets/reynolds_number_comparison.png)
 
 Sample Trajectory 2
