@@ -15,7 +15,7 @@ time, alt_m, vel_ms = traj[:, 0], traj[:, 1] * 1000, traj[:, 3] * 1000
 
 fig, ax = plt.subplots(2, 3, figsize=(15, 8), sharex=True)
 
-fig.suptitle(f'HiFiRE-1 Reynolds Number vs Time (L = {L_ref} m)',
+fig.suptitle(f'Stort Reynolds Number vs Time (L = {L_ref} m)',
              fontsize=16, fontweight='bold')
 
 atm_ussa = flow_state.atmosphere.USSA76()
