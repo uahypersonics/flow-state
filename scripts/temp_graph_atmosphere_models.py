@@ -68,4 +68,5 @@ for lat in latitudes:
     axs[1, col].set_yticklabels(['0', '20', '40', '60', '80'], fontsize=12)
 
 plt.tight_layout()
-plt.show()
+plt.savefig('docs/assets/atmosphere_models_temp.png', dpi=150)
+plt.close()

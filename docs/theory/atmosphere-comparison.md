@@ -9,6 +9,8 @@
 
 ![Atmosphere model comparison for density](../assets/atmosphere_density_comparison.png)
 
+![Temperature comparison](../assets/atmosphere_models_temp.png)
+
 ![CIRA86 latitude grid](../assets/cira86_latitude_grid.png)
 
 ## Reproducing These Plots
@@ -16,7 +18,7 @@
 The figures were generated with:
 
 ```bash
-python scripts/generate_atmosphere_plots.py   # T, p, rho comparison
+python scripts/temp_graph_atmosphere_models.py   # T
 python scripts/generate_latitude_grid.py       # CIRA86 latitude schematic
 ```
 
