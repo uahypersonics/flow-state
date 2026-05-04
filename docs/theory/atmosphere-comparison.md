@@ -3,7 +3,8 @@
 !!! warning "Under Construction"
     This page is incomplete.
 
-![Atmosphere model comparison](../assets/atmosphere_comparison.png)
+#[Atmosphere model comparison](../assets/atmosphere_comparison.png)
+![Atmosphere model comparison](../assets/atmosphere_density_comparison.png)
 
 ![CIRA86 latitude grid](../assets/cira86_latitude_grid.png)
 
