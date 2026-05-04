@@ -5,6 +5,8 @@
 
 ![Atmosphere model comparison](../assets/atmosphere_comparison.png)
 
+![Temperature comparison](../assets/atmosphere_models_temp.png)
+
 ![CIRA86 latitude grid](../assets/cira86_latitude_grid.png)
 
 ## Reproducing These Plots
