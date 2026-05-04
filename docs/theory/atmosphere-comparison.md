@@ -27,7 +27,7 @@ python scripts/generate_latitude_grid.py           # CIRA86 latitude schematic
 
 Sample Trajectory 1: HIFIRE-1 Flight Experiment 2007 (Kimmel)
 
-![Sample Trajectory 1](../assets/re1_hifire.png)
+![Sample Trajectory 1](../assets/re1_hifire1.png)
 
 Sample Trajectory 2
 
