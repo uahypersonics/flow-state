@@ -22,7 +22,7 @@ python scripts/generate_latitude_grid.py       # CIRA86 latitude schematic
 
 ## Sample Trajectory Calculation
 
-Sample Trajectory 1
+Sample Trajectory 1: HIFIRE-1 Flight Experiment 2007 (Kimmel)
 
 ![Sample Trajectory 1](../assets/reynolds_number_comparison.png)
 
