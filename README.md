@@ -20,6 +20,8 @@ pip install flow-state-calculator
 
 ## Quick Start
 
+**API:**
+
 ```python
 from flow_state import solve
 
@@ -32,41 +34,19 @@ state = solve(mach=6, pres_stag=(140, "psi"), temp_stag=420)
 # From Mach and target unit Reynolds number
 state = solve(mach=5.3, re1=12.8e6)
 
-# Access results
 print(state)  # Full summary
 print(state.pres, state.temp, state.re1)
 ```
 
-## Features
-
-- **Smart solver**: Automatically selects the right equations based on your inputs
-- **Unit support**: Use SI or provide tuples like `(30000, "ft")`, `(140, "psi")`
-- **Atmosphere models**: US Standard Atmosphere 1976 and CIRA-86
-- **Gas models**: Perfect gas (air, nitrogen, custom)
-- **Transport**: Sutherland viscosity law
-- **Output**: JSON, TOML, or legacy `.dat` format
-
-## CLI
+**CLI:**
 
 ```bash
-# Create a config template
-flow-state init
-
-# Edit flow_config.toml, then solve
-flow-state solve
+flow-state init    # Create a config template
+flow-state solve   # Solve from flow_config.toml
 ```
 
-## Atmosphere Models
-
-```python
-from flow_state import solve, atmosphere
-
-# Default: US Standard Atmosphere 1976
-state = solve(mach=2, altitude=10000)
-
-# CIRA-86 with latitude and month
-state = solve(mach=2, altitude=10000, atm=atmosphere.CIRA86(latitude=70, month=1))
-```
+- API Usage: https://uahypersonics.github.io/flow-state/user_guide/api_usage/
+- CLI Usage: https://uahypersonics.github.io/flow-state/user_guide/cli_usage/
 
 ## Documentation
 
@@ -120,28 +100,6 @@ To publish a new version to [PyPI](https://pypi.org/project/flow-state-calculato
    ```
 
 The GitHub Actions workflow will automatically build and publish to PyPI via Trusted Publishing.
-
-## Contributors
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chader2811"><img src="https://avatars.githubusercontent.com/u/57595181?v=4?s=100" width="100px;" alt="chader2811"/><br /><sub><b>chader2811</b></sub></a><br /><a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Code">💻</a> <a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Documentation">📖</a> <a href="#design-chader2811" title="Design">🎨</a> <a href="#ideas-chader2811" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-chader2811" title="Maintenance">🚧</a> <a href="#data-chader2811" title="Data">🔣</a> <a href="https://github.com/uahypersonics/flow-state/commits?author=chader2811" title="Tests">⚠️</a> <a href="#example-chader2811" title="Examples">💡</a> <a href="#infra-chader2811" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-Contributions are welcome: code, documentation, verification data, and bug reports.
-See the [contribution types](https://allcontributors.org/docs/en/emoji-key)
-recognized by this project.
 
 ## License
 
