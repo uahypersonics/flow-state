@@ -11,6 +11,7 @@ Run with:
 """
 
 import json
+from importlib.metadata import version as _pkg_version
 
 import streamlit as st
 
@@ -23,10 +24,11 @@ from flow_state import (
     from_re1_pres_stag_temp_stag,
     from_re1_temp_mach,
 )
-from flow_state._version import __version__
 from flow_state.atmosphere import CIRA86, USSA76
 from flow_state.gas import PerfectGas
 from flow_state.transport import Sutherland
+
+__version__ = _pkg_version("flow-state-calculator")
 
 # Solver options with user-friendly names
 SOLVERS = {
