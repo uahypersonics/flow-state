@@ -1,0 +1,28 @@
+# --------------------------------------------------
+# AEDC Tunnel 9 (Arnold Engineering Development Complex)
+#
+# Run: flow-state solve --config flow_config.toml
+# --------------------------------------------------
+
+# --------------------------------------------------
+# given values
+# --------------------------------------------------
+
+# mach number [-]
+mach = 9.86
+# freestream static temperature [K]
+temp = 53.4
+# unit reynolds number [1/m]
+re1 = 15.03e6
+# reference length scale [m]
+lref = 1.0
+
+# --------------------------------------------------
+# gas model
+# --------------------------------------------------
+gas = "n2"
+
+# --------------------------------------------------
+# label (optional)
+# --------------------------------------------------
+notes = "aedc tunnel 9 nominal mach 10 run conditions"

@@ -341,6 +341,14 @@ def solve(
     uvel = _parse_value(uvel, convert_velocity)
     lref_si = _parse_value(lref, convert_length)
 
+    # resolve gas string to (PerfectGas, default transport) via registry
+    # also sets transport to the gas-matched default if caller did not provide one
+    if isinstance(gas, str):
+        from flow_state.gas.registry import get_gas
+        gas, default_transport = get_gas(gas)
+        if transport is None:
+            transport = default_transport
+
     # use perfect gas model as default if no explicit gas model is provided
     if gas is None:
         gas = PerfectGas.air()
@@ -375,6 +383,9 @@ def solve(
         # re1 + pres_stag + temp_stag -> solve for mach
         if has_pres_stag and has_temp_stag:
             return from_re1_pres_stag_temp_stag(re1, pres_stag, temp_stag, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+        # re1 + mach + temp_stag -> convert stag to static temp, then solve for pres
+        if has_mach and has_temp_stag and not has_pres_stag:
+            return from_re1_mach_temp_stag(re1, mach, temp_stag, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
         # re1 + mach -> solve for conditions for standard atmosphere (need to iterate for altitude that yields target re1)
         if has_mach and not has_altitude and not has_pres and not has_temp:
             return from_mach_re1_atmosphere(re1, mach, gas, transport, atm=atm, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
@@ -383,10 +394,10 @@ def solve(
             "Invalid input combination with re1. Valid combinations:\n"
             "  - re1, temp, mach (solves for pressure)\n"
             "  - re1, pres, mach (solves for temperature)\n"
+            "  - re1, mach, temp_stag (solves for pressure)\n"
             "  - re1, pres_stag, temp_stag (solves for Mach)\n"
             "  - re1, mach (solves for altitude)"
         )
-
     # altitude solver
     if has_altitude:
         # altitude + mach -> solve for static conditions
@@ -640,6 +651,52 @@ def from_re1_pres_mach(
         provenance = {"inputs": {"re1": re1, "pres": pres, "mach": mach}}
     provenance["builder"] = "from_re1_pres_mach"
     return _build_state(pres, temp, mach, None, gas, transport, pr, lref, notes, provenance)
+
+
+# --------------------------------------------------
+# solve for pres given re1, mach, temp_stag
+# --------------------------------------------------
+def from_re1_mach_temp_stag(
+    re1: float,
+    mach: float,
+    temp_stag: float,
+    gas: PerfectGas,
+    transport: Sutherland,
+    lref: float = 1.0,
+    pr: float | None = None,
+    notes: str | None = None,
+    provenance: dict | None = None,
+) -> FlowState:
+    """
+    Solve FlowState from target Re1, Mach, and stagnation temperature.
+
+    Converts stagnation temperature to static via isentropic relation,
+    then finds the pressure that yields the target unit Reynolds number.
+
+    Args:
+        re1: Target unit Reynolds number [1/m]
+        mach: Mach number [-]
+        temp_stag: Stagnation temperature [K]
+        gas: Gas model
+        transport: Transport model (required for Re1)
+        lref: Reference length scale [m] for turbulence scales
+        pr: Optional Prandtl number [-]
+        notes: Optional notes
+        provenance: Optional provenance dict (passed from solve())
+
+    Returns:
+        FlowState with pressure solved from target Re1.
+    """
+    # convert stagnation temperature to static via isentropic relation
+    gamma = gas.gamma(temp_stag, 101325.0)
+    temp = temp_stag / (1.0 + 0.5 * (gamma - 1.0) * mach**2)
+
+    if provenance is None:
+        provenance = {"inputs": {"re1": re1, "mach": mach, "temp_stag": temp_stag}}
+    provenance["builder"] = "from_re1_mach_temp_stag"
+
+    # delegate to re1+temp+mach solver
+    return from_re1_temp_mach(re1, temp, mach, gas, transport, lref=lref, pr=pr, notes=notes, provenance=provenance)
 
 
 # --------------------------------------------------

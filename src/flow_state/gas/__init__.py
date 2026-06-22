@@ -14,5 +14,6 @@ Model selection guide:
 from flow_state.gas.equilibrium import EquilibriumAir
 from flow_state.gas.park import ParkAir
 from flow_state.gas.perfect import PerfectGas
+from flow_state.gas.registry import available_gases, get_gas
 
-__all__ = ["PerfectGas", "ParkAir", "EquilibriumAir"]
+__all__ = ["PerfectGas", "ParkAir", "EquilibriumAir", "get_gas", "available_gases"]

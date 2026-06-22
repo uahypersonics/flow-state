@@ -2,8 +2,9 @@
 Command-line interface for flow_state.
 
 Commands:
-    flow-state init   - Generate a template config file (flow_config.toml)
-    flow-state solve  - Compute flow state from config, output to JSON
+    flow-state init     - Generate a template config file (flow_config.toml)
+    flow-state examples - List or copy bundled example configs
+    flow-state solve    - Compute flow state from config, output to JSON
 """
 
 # --------------------------------------------------
@@ -12,6 +13,7 @@ Commands:
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Annotated
 
@@ -45,6 +47,28 @@ cli = typer.Typer(
     # show help when no command is given
     no_args_is_help=True,
 )
+
+
+# --------------------------------------------------
+# module-level logger
+# --------------------------------------------------
+
+logger = logging.getLogger(__name__)
+
+
+# --------------------------------------------------
+# helper: configure console logging
+# --------------------------------------------------
+
+
+def _configure_logging(debug: bool) -> None:
+    """Configure root logger level and format."""
+    # set DEBUG level when -v is passed, otherwise INFO
+    level = logging.DEBUG if debug else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(levelname)-8s %(message)s",
+    )
 
 
 # --------------------------------------------------
@@ -84,14 +108,27 @@ def main(
         bool | None,
         typer.Option(
             "--version",
-            "-v",
+            "-V",
             help="Show version and exit.",
             callback=version_callback,
             is_eager=True,
         ),
     ] = None,
+    # debug option:
+    # - enables verbose output: resolved inputs, builder selected, provenance
+    # - cli flags: --debug or -v
+    debug: Annotated[
+        bool,
+        typer.Option(
+            "--debug",
+            "-v",
+            help="Enable verbose/debug output.",
+        ),
+    ] = False,
 ) -> None:
     """flow-state: Compute flow states"""
+    # configure logging level based on --debug flag
+    _configure_logging(debug)
     # pass means "do nothing" - the callback just handles --version
     # actual work happens in the commands (init, solve)
     pass
@@ -140,10 +177,93 @@ temp_stag = 420           # Kelvin
 lref = 1.0  # [m]
 
 # --------------------------------------------------
+# Gas model (optional, default: "air")
+# --------------------------------------------------
+# gas = "air"       # calorically perfect air (gamma=1.4, R=287.05)
+# gas = "n2"        # nitrogen (gamma=1.4, R=296.8, Sutherland nitrogen)
+
+# --------------------------------------------------
 # Optional notes
 # --------------------------------------------------
 # notes = "BAM6QT Mach 6 tunnel conditions"
 '''
+
+
+# --------------------------------------------------
+# examples command: list or copy bundled example config files
+# --------------------------------------------------
+
+
+@cli.command("examples")
+def cmd_examples(
+    # name option:
+    # - short name of the example to copy (e.g. "bam6qt")
+    # - if omitted, command lists all available examples
+    # - cli flags: --name or -n
+    name: Annotated[
+        str | None,
+        typer.Option(
+            "--name", "-n",
+            help="Example name to copy (e.g. bam6qt). Omit to list all.",
+        ),
+    ] = None,
+    # output option:
+    # - path to write the copied config file
+    # - default: flow_config.toml in CWD
+    # - cli flags: --output or -o
+    output: Annotated[
+        Path,
+        typer.Option(
+            "--output", "-o",
+            help="Output config file path",
+        ),
+    ] = Path(DEFAULT_CONFIG),
+    # force option:
+    # - whether to overwrite an existing output file
+    # - cli flags: --force or -f
+    force: Annotated[
+        bool,
+        typer.Option(
+            "--force", "-f",
+            help="Overwrite existing file",
+        ),
+    ] = False,
+) -> None:
+    """
+    List available example configs, or copy one to the current directory.
+    """
+    # import helpers here to keep top-level imports light
+    from flow_state.io.examples import available_example_names, get_example_text, list_examples
+
+    # -- list mode: no name provided, print all examples --
+    if name is None:
+        examples = list_examples()
+        typer.echo("Available examples:")
+        typer.echo("")
+        for ex_name, desc in examples.items():
+            typer.echo(f"  {ex_name:<20} {desc}")
+        typer.echo("")
+        typer.echo("Copy an example:  flow-state examples --name <name>")
+        return
+
+    # -- copy mode: resolve name and write to output file --
+
+    # validate name against registry
+    if name.lower() not in available_example_names():
+        valid = ", ".join(available_example_names())
+        typer.echo(f"Error: unknown example '{name}'. Available: {valid}", err=True)
+        raise typer.Exit(1)
+
+    # check for existing output file
+    if output.exists() and not force:
+        typer.echo(f"Error: {output} already exists. Use --force to overwrite.", err=True)
+        raise typer.Exit(1)
+
+    # read bundled TOML and write to output path
+    text = get_example_text(name)
+    output.write_text(text)
+    typer.echo(f"Created {output}")
+    typer.echo("Edit the file, then run: flow-state solve")
 
 
 # --------------------------------------------------
@@ -316,12 +436,12 @@ def cmd_solve(
     ] = None,
     # ----- Output options -----
     output: Annotated[
-        Path | None,
+        Path,
         typer.Option(
             "--output", "-o",
-            help="Output file (JSON). If not specified, no file is written.",
+            help="Output file (JSON). Defaults to flow_conditions.json in the current directory.",
         ),
-    ] = None,
+    ] = Path("flow_conditions.json"),
     dat: Annotated[
         bool,
         typer.Option(
@@ -404,6 +524,13 @@ def cmd_solve(
     except (ValueError, TypeError) as e:
         typer.echo(f"Error computing flow state: {e}", err=True)
         raise typer.Exit(1)
+
+    # debug output: log resolved inputs and builder selected
+    if state.provenance:
+        for key, val in state.provenance.items():
+            logger.debug("%s: %s", key, val)
+    logger.debug("gas_model:       %s", state.gas_model)
+    logger.debug("transport_model: %s", state.transport_model)
 
     # write JSON output if requested
     if output:

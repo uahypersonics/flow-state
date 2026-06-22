@@ -50,6 +50,9 @@ Documentation = "https://uahypersonics.github.io/flow-state"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"flow_state" = ["examples/*.toml"]
+
 [tool.setuptools_scm]
 
 [tool.pytest.ini_options]

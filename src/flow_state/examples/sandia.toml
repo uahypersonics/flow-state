@@ -1,0 +1,23 @@
+# --------------------------------------------------
+# Sandia Hypersonic Wind Tunnel
+#
+# Run: flow-state solve --config flow_config.toml
+# --------------------------------------------------
+
+# --------------------------------------------------
+# given values
+# --------------------------------------------------
+
+# mach number [-]
+mach = 5.0
+# stagnation temperature [K]
+temp_stag = 452.0
+# unit reynolds number [1/m]
+re1 = 11.4e6
+# reference length scale [m]
+lref = 1.0
+
+# --------------------------------------------------
+# label (optional)
+# --------------------------------------------------
+notes = "sandia hypersonic wind tunnel nominal mach 5 run conditions"

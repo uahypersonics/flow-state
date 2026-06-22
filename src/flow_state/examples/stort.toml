@@ -1,0 +1,21 @@
+# --------------------------------------------------
+# STORT (Short Range Transition)
+#
+# Run: flow-state solve --config flow_config.toml
+# --------------------------------------------------
+
+# --------------------------------------------------
+# given values
+# --------------------------------------------------
+
+# mach number [-]
+mach = 7.1
+# flight altitude [km]
+altitude = [33.2, "km"]
+# reference length scale [m]
+lref = 1.0
+
+# --------------------------------------------------
+# label (optional)
+# --------------------------------------------------
+notes = "stort flight conditions"

@@ -50,7 +50,7 @@ def read_config(path: Path) -> dict[str, Any]:
     param_keys = [
         "mach", "pres", "temp", "uvel",
         "pres_stag", "temp_stag",
-        "altitude", "re1", "lref", "pr", "notes"
+        "altitude", "re1", "lref", "pr", "gas", "notes"
     ]
 
     for key in param_keys:
