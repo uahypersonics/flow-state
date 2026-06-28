@@ -199,14 +199,12 @@ lref = 1.0  # [m]
 
 @cli.command("examples")
 def cmd_examples(
-    # name option:
+    # name argument:
     # - short name of the example to copy (e.g. "bam6qt")
     # - if omitted, command lists all available examples
-    # - cli flags: --name or -n
     name: Annotated[
         str | None,
-        typer.Option(
-            "--name", "-n",
+        typer.Argument(
             help="Example name to copy (e.g. bam6qt). Omit to list all.",
         ),
     ] = None,
@@ -246,7 +244,7 @@ def cmd_examples(
         for ex_name, desc in examples.items():
             typer.echo(f"  {ex_name:<20} {desc}")
         typer.echo("")
-        typer.echo("Copy an example:  flow-state examples --name <name>")
+        typer.echo("Copy an example:  flow-state examples <name>")
         return
 
     # -- copy mode: resolve name and write to output file --
