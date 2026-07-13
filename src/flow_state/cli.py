@@ -14,7 +14,7 @@ Commands:
 from __future__ import annotations
 
 import logging
-from importlib.metadata import version as _pkg_version
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
 from pathlib import Path
 from typing import Annotated
 
@@ -24,7 +24,10 @@ from flow_state.io import read_config, write_flow_conditions_dat, write_json
 from flow_state.solvers import solve
 
 # read version from installed package metadata (set by git tag via setuptools-scm)
-__version__ = _pkg_version("flow-state-calculator")
+try:
+    __version__ = _pkg_version("flowstate")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
 
 # --------------------------------------------------
 # default file names
