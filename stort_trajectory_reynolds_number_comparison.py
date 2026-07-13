@@ -1,6 +1,5 @@
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 import flow_state
 
@@ -10,13 +9,13 @@ def sutherland_mu(T):
 
     return 1.716e-5 * (T / 273.15)**1.5 * (273.15 + 110.4) / (T + 110.4)
 
-traj = np.loadtxt('trajectory_digitized_stort_no_confidence_band.dat', skiprows=3) 
+traj = np.loadtxt('trajectory_digitized_stort_no_confidence_band.dat', skiprows=3)
 
-time, alt_m, vel_ms = traj[:, 0], traj[:, 1] * 1000, traj[:, 3] * 1000 
+time, alt_m, vel_ms = traj[:, 0], traj[:, 1] * 1000, traj[:, 3] * 1000
 
-fig, ax = plt.subplots(2, 3, figsize=(15, 8), sharex=True, constrained_layout=True) 
+fig, ax = plt.subplots(2, 3, figsize=(15, 8), sharex=True, constrained_layout=True)
 
-fig.suptitle(f'HiFiRE-1 Reynolds Number vs Time (L = {L_ref} m)', fontsize=16, fontweight='bold') 
+fig.suptitle(f'HiFiRE-1 Reynolds Number vs Time (L = {L_ref} m)', fontsize=16, fontweight='bold')
 
 # Adjust spacing between subplots
 
@@ -24,17 +23,17 @@ fig.subplots_adjust(wspace=0.3, hspace=0.4)
 
 atm_ussa = flow_state.atmosphere.USSA76()
 
-re_ussa = np.array([(atm_ussa(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(atm_ussa(alt_m[i]).temp) for i in range(len(time))]) 
+re_ussa = np.array([(atm_ussa(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(atm_ussa(alt_m[i]).temp) for i in range(len(time))])
 
-for j, (lat, title) in enumerate(zip([0, 40, -40], ['Equator (0°)', '40° North', '40° South'])): 
+for j, (lat, title) in enumerate(zip([0, 40, -40], ['Equator (0°)', '40° North', '40° South'])):
 
     model_jan = flow_state.atmosphere.CIRA86(latitude=lat, month=1)
 
 model_jul = flow_state.atmosphere.CIRA86(latitude=lat, month=7)
 
-re_jan = np.array([(model_jan(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(model_jan(alt_m[i]).temp) for i in range(len(time))]) 
+re_jan = np.array([(model_jan(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(model_jan(alt_m[i]).temp) for i in range(len(time))])
 
-re_jul = np.array([(model_jul(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(model_jul(alt_m[i]).temp) for i in range(len(time))]) 
+re_jul = np.array([(model_jul(alt_m[i]).dens * vel_ms[i] * L_ref) / sutherland_mu(model_jul(alt_m[i]).temp) for i in range(len(time))])
 
 err_jan = ((re_jan - re_ussa) / re_ussa) * 100
 
