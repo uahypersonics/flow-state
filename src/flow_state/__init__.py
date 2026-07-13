@@ -1,8 +1,13 @@
 """Compressible flow state utilities."""
 
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = version("flow-state-calculator")
+# read installed package metadata when available
+try:
+    __version__ = version("flowstate")
+except PackageNotFoundError:
+    # default for source-tree execution where package metadata is absent
+    __version__ = "0+unknown"
 
 from flow_state import atmosphere, io
 from flow_state.core import FlowState
