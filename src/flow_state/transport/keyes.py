@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 # --------------------------------------------------
@@ -30,7 +31,6 @@ class Keyes:
         a0: Coefficient [kg/(m·s·K^0.5)]
         a1: Coefficient [K]
         a2: Coefficient [-]
-        name: Model identifier
     """
 
     # --------------------------------------------------
@@ -39,7 +39,8 @@ class Keyes:
     a0: float
     a1: float
     a2: float
-    name: str = "keyes"
+
+    model_type: ClassVar[str] = "keyes"
 
     # --------------------------------------------------
     # class methods for standard gases
@@ -53,12 +54,12 @@ class Keyes:
     @classmethod
     def air(cls) -> Keyes:
         """Keyes viscosity model for air."""
-        return cls(a0=1.488e-6, a1=122.1, a2=5.0, name="keyes_air")
+        return cls(a0=1.488e-6, a1=122.1, a2=5.0)
 
     @classmethod
     def nitrogen(cls) -> Keyes:
         """Keyes viscosity model for nitrogen."""
-        return cls(a0=1.418e-6, a1=116.4, a2=5.0, name="keyes_nitrogen")
+        return cls(a0=1.418e-6, a1=116.4, a2=5.0)
 
     # --------------------------------------------------
     # methods to compute viscosity

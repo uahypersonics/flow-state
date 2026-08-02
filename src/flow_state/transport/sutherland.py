@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 # --------------------------------------------------
@@ -23,7 +24,6 @@ class Sutherland:
         mu_ref: Reference viscosity [Pa s]
         T_ref: Reference temperature [K]
         S: Sutherland constant [K]
-        name: Model identifier
 
     Notes:
         - Valid for moderate temperatures (~100 K to ~1900 K for air)
@@ -36,7 +36,8 @@ class Sutherland:
     mu_ref: float
     T_ref: float
     S: float
-    name: str = "sutherland"
+
+    model_type: ClassVar[str] = "sutherland"
 
     # --------------------------------------------------
     # class methods for standard gases
@@ -56,17 +57,22 @@ class Sutherland:
     @classmethod
     def air(cls) -> Sutherland:
         """Sutherland model for air (mu_ref=1.716e-5 at 273.15 K, S=110.4 K)."""
-        return cls(mu_ref=1.716e-5, T_ref=273.15, S=110.4, name="sutherland_air")
+        return cls(mu_ref=1.716e-5, T_ref=273.15, S=110.4)
 
     @classmethod
     def nitrogen(cls) -> Sutherland:
         """Sutherland model for nitrogen (mu_ref=1.663e-5 at 273.15 K, S=106.7 K)."""
-        return cls(mu_ref=1.663e-5, T_ref=273.15, S=106.7, name="sutherland_nitrogen")
+        return cls(mu_ref=1.663e-5, T_ref=273.15, S=106.7)
 
     @classmethod
-    def custom(cls, mu_ref: float, T_ref: float, S: float, name: str = "sutherland_custom") -> Sutherland:
+    def custom(
+        cls,
+        mu_ref: float,
+        T_ref: float,
+        S: float,
+    ) -> Sutherland:
         """Create a custom Sutherland model."""
-        return cls(mu_ref=mu_ref, T_ref=T_ref, S=S, name=name)
+        return cls(mu_ref=mu_ref, T_ref=T_ref, S=S)
 
     # --------------------------------------------------
     # methods to compute viscosity
@@ -86,7 +92,7 @@ class Sutherland:
             raise ValueError(f"Temperature must be positive, got {temp} K")
         # d/dT [mu_ref * (T/T_ref)^1.5 * (T_ref + S)/(T + S)]
         c1 = self.mu_ref * (self.T_ref + self.S) / self.T_ref**1.5
-        return c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S)**2
+        return c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S) ** 2
 
     def nu(self, temp: float, dens: float) -> float:
         """Kinematic viscosity [m^2/s] at temperature temp [K] and density dens [kg/m^3]."""
@@ -116,7 +122,6 @@ class SutherlandLowTemp:
         S: Sutherland constant [K], default 110.4
         T1: Lower transition temperature [K], default 40.0
         T2: Upper transition temperature [K], default 110.4
-        name: Model identifier
     """
 
     c1: float = 1.458e-6
@@ -124,7 +129,8 @@ class SutherlandLowTemp:
     S: float = 110.4
     T1: float = 40.0
     T2: float = 110.4
-    name: str = "sutherland_low_temp"
+
+    model_type: ClassVar[str] = "sutherland_low_temp"
 
     # --------------------------------------------------
     # class methods for standard gases
@@ -137,7 +143,7 @@ class SutherlandLowTemp:
     @classmethod
     def air(cls) -> SutherlandLowTemp:
         """Low-temperature corrected Sutherland model for air."""
-        return cls(name="sutherland_low_temp_air")
+        return cls()
 
     # --------------------------------------------------
     # methods to compute viscosity
@@ -156,7 +162,7 @@ class SutherlandLowTemp:
             return self.c2 * temp
         else:
             # Standard Sutherland above T2
-            return self.c1 * temp ** 1.5 / (temp + self.S)
+            return self.c1 * temp**1.5 / (temp + self.S)
 
     def dmudt(self, temp: float) -> float:
         """Derivative of dynamic viscosity w.r.t. temperature [Pa s / K]."""
@@ -172,7 +178,7 @@ class SutherlandLowTemp:
         else:
             # Standard Sutherland above T2
             # d/dT [c1 * T^1.5 / (T + S)]
-            return self.c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S)**2
+            return self.c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S) ** 2
 
     def nu(self, temp: float, dens: float) -> float:
         """Kinematic viscosity [m^2/s]."""
@@ -200,13 +206,13 @@ class SutherlandBlended:
         c1: Sutherland coefficient [kg/(m·s·K^0.5)]
         c2: Linear coefficient [kg/(m·s·K)]
         S: Sutherland constant [K]
-        name: Model identifier
     """
 
     c1: float = 1.458e-6
     c2: float = 6.93873e-8
     S: float = 110.4
-    name: str = "sutherland_blended"
+
+    model_type: ClassVar[str] = "sutherland_blended"
 
     # --------------------------------------------------
     # blending polynomial coefficients (from profcom)
@@ -232,7 +238,7 @@ class SutherlandBlended:
     @classmethod
     def air(cls) -> SutherlandBlended:
         """Blended Sutherland model for air."""
-        return cls(name="sutherland_blended_air")
+        return cls()
 
     # --------------------------------------------------
     # methods to compute viscosity
@@ -245,7 +251,7 @@ class SutherlandBlended:
 
         if temp > 130.0:
             # Standard Sutherland
-            return self.c1 * temp ** 1.5 / (temp + self.S)
+            return self.c1 * temp**1.5 / (temp + self.S)
         elif temp > 100.0:
             # Polynomial blend
             t_norm = temp / self.S
@@ -271,7 +277,7 @@ class SutherlandBlended:
 
         if temp > 130.0:
             # Standard Sutherland
-            return self.c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S)**2
+            return self.c1 * temp**0.5 * (0.5 * temp + 1.5 * self.S) / (temp + self.S) ** 2
         elif temp > 100.0:
             # Polynomial blend derivative
             t_norm = temp / self.S

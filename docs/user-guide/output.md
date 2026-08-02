@@ -29,7 +29,14 @@ Each value is stored as `[value, "unit"]` for self-documentation:
 ```json
 {
   "gas_model": "air",
-  "transport_model": "sutherland",
+  "transport_model": {
+    "type": "sutherland",
+    "parameters": {
+      "mu_ref": 1.716e-5,
+      "T_ref": 273.15,
+      "S": 110.4
+    }
+  },
   "pres": [611.36, "Pa"],
   "temp": [51.22, "K"],
   "dens": [0.0416, "kg/m^3"],
@@ -50,6 +57,17 @@ Each value is stored as `[value, "unit"]` for self-documentation:
 ```
 
 The `provenance` field records the original inputs exactly as provided, useful for reproducibility.
+
+### Reading JSON
+
+Use `read_json()` to reconstruct the complete `FlowState`, including its transport
+specification and turbulence scales:
+
+```python
+from flow_state.io import read_json
+
+state = read_json("results.json")
+```
 
 ## TOML Output
 

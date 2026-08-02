@@ -69,7 +69,12 @@ class TestSolveStaticConditions:
         sutherland = Sutherland.air()
         state = solve(pres=101325.0, temp=300.0, gas=air, transport=sutherland)
 
-        assert state.transport_model == sutherland.name
+        assert state.transport_model.model_type == "sutherland"
+        assert state.transport_model.parameters == {
+            "mu_ref": sutherland.mu_ref,
+            "T_ref": sutherland.T_ref,
+            "S": sutherland.S,
+        }
         assert state.mu is not None
         assert state.nu is not None
         assert state.mu > 0
@@ -120,7 +125,9 @@ class TestFromMPT:
         """unit reynolds number computed with transport model"""
         air = PerfectGas.air()
         sutherland = Sutherland.air()
-        state = from_mach_pres_temp(mach=2.0, pres=101325.0, temp=300.0, gas=air, transport=sutherland)
+        state = from_mach_pres_temp(
+            mach=2.0, pres=101325.0, temp=300.0, gas=air, transport=sutherland
+        )
 
         assert state.re1 is not None
         # re1 = dens * uvel / mu
@@ -141,7 +148,9 @@ class TestFromMPT:
         """nitrogen gas model"""
         n2 = PerfectGas.nitrogen()
         sutherland = Sutherland.nitrogen()
-        state = from_mach_pres_temp(mach=2.0, pres=101325.0, temp=300.0, gas=n2, transport=sutherland)
+        state = from_mach_pres_temp(
+            mach=2.0, pres=101325.0, temp=300.0, gas=n2, transport=sutherland
+        )
 
         assert state.gas_model == "nitrogen"
         assert state.r_gas == 296.8
@@ -173,7 +182,13 @@ class TestFromMachPressStagTempStag:
         assert state.mach == mach
 
         # Verify static conditions are correct via isentropic relations
-        static = stag_to_stat(mach, pres_stag, temp_stag, gamma=air.gamma(temp_stag, pres_stag), r_gas=air.r_gas(temp_stag, pres_stag))
+        static = stag_to_stat(
+            mach,
+            pres_stag,
+            temp_stag,
+            gamma=air.gamma(temp_stag, pres_stag),
+            r_gas=air.r_gas(temp_stag, pres_stag),
+        )
         assert state.pres == pytest.approx(static.pres, rel=1e-10)
         assert state.temp == pytest.approx(static.temp, rel=1e-10)
         assert state.dens == pytest.approx(static.dens, rel=1e-10)
@@ -259,8 +274,7 @@ class TestFromMachPressStagTempStag:
 
         # With units via solve() - psi and K
         state_units = solve(
-            mach=6.0, pres_stag=(140.0, "psi"),
-            temp_stag=420.0, gas=air, transport=None
+            mach=6.0, pres_stag=(140.0, "psi"), temp_stag=420.0, gas=air, transport=None
         )
 
         # Results should be very close
@@ -338,4 +352,3 @@ class TestFromMachAltitudeAtmosphere:
         # temperature should be warming again in upper stratosphere
         assert state.temp > 216.0  # above isothermal layer temp
         assert state.mach == 3.0
-

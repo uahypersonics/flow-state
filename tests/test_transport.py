@@ -14,6 +14,8 @@ from flow_state.transport import (
     Sutherland,
     SutherlandBlended,
     SutherlandLowTemp,
+    transport_model_from_dict,
+    transport_model_to_spec,
 )
 from flow_state.transport.registry import available_transport_models, get_transport_model
 
@@ -31,7 +33,7 @@ class TestSutherland:
         assert air.mu_ref == pytest.approx(1.716e-5, rel=0.01)
         assert air.T_ref == pytest.approx(273.15, rel=0.01)
         assert air.S == pytest.approx(110.4, rel=0.01)
-        assert "air" in air.name.lower()
+        assert air.model_type == "sutherland"
 
     def test_nitrogen_defaults(self) -> None:
         """nitrogen preset has reasonable values"""
@@ -39,7 +41,7 @@ class TestSutherland:
         assert n2.mu_ref == pytest.approx(1.663e-5, rel=0.01)
         assert n2.T_ref == pytest.approx(273.15, rel=0.01)
         assert n2.S == pytest.approx(106.7, rel=0.05)  # looser tolerance, values vary in literature
-        assert "nitrogen" in n2.name.lower()
+        assert n2.model_type == "sutherland"
 
     def test_custom_model(self) -> None:
         """custom model creation"""
@@ -47,12 +49,10 @@ class TestSutherland:
             mu_ref=1.8e-5,
             T_ref=300.0,
             S=120.0,
-            name="test_gas",
         )
         assert custom.mu_ref == 1.8e-5
         assert custom.T_ref == 300.0
         assert custom.S == 120.0
-        assert custom.name == "test_gas"
 
     def test_mu_at_reference_temperature(self) -> None:
         """mu(T_ref) returns mu_ref"""
@@ -148,7 +148,7 @@ class TestSutherlandLowTemp:
     def test_air_preset(self) -> None:
         """air preset creation"""
         model = SutherlandLowTemp.air()
-        assert "air" in model.name.lower()
+        assert model.model_type == "sutherland_low_temp"
 
     def test_high_temp_matches_standard(self) -> None:
         """above T2, matches standard Sutherland"""
@@ -208,7 +208,7 @@ class TestSutherlandBlended:
     def test_air_preset(self) -> None:
         """air preset creation"""
         model = SutherlandBlended.air()
-        assert "air" in model.name.lower()
+        assert model.model_type == "sutherland_blended"
 
     def test_high_temp_standard_sutherland(self) -> None:
         """above 130 K, matches standard Sutherland"""
@@ -452,3 +452,48 @@ class TestTransportRegistry:
         assert "keyes" in models
         assert "power_law" in models
         assert len(models) >= 5
+
+
+# --------------------------------------------------
+# transport model serialization tests
+# --------------------------------------------------
+@pytest.mark.parametrize(
+    "model",
+    [
+        Sutherland.air(),
+        Sutherland.nitrogen(),
+        Keyes.air(),
+        Keyes.nitrogen(),
+        PowerLaw.air(),
+        SutherlandLowTemp.air(),
+        SutherlandBlended.air(),
+        Sutherland.custom(1.8e-5, 300.0, 120.0),
+    ],
+)
+def test_transport_model_round_trip(model) -> None:
+    """Serialized transport specifications should reconstruct exact models."""
+
+    # serialize and reconstruct the transport model
+    spec_dict = transport_model_to_spec(model).to_dict()
+    reconstructed_model = transport_model_from_dict(spec_dict)
+
+    # check model metadata and viscosity behavior
+    assert reconstructed_model.model_type == model.model_type
+    assert reconstructed_model.mu(300.0) == pytest.approx(model.mu(300.0))
+
+
+def test_sutherland_air_transport_spec_schema() -> None:
+    """Sutherland air should use the canonical type/parameters schema."""
+
+    # serialize the standard air model
+    spec_dict = transport_model_to_spec(Sutherland.air()).to_dict()
+
+    # check the complete public schema
+    assert spec_dict == {
+        "type": "sutherland",
+        "parameters": {
+            "mu_ref": 1.716e-5,
+            "T_ref": 273.15,
+            "S": 110.4,
+        },
+    }

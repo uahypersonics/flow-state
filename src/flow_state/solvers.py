@@ -18,7 +18,11 @@ from flow_state.core import FlowState
 from flow_state.gas import PerfectGas
 from flow_state.isentropic import stag_to_stat, stat_to_stag
 from flow_state.math_utils import bisect
-from flow_state.transport import Sutherland
+from flow_state.transport import (
+    Sutherland,
+    TransportModel,
+    transport_model_to_spec,
+)
 from flow_state.turbulence import kolmogorov_scales, taylor_scales
 from flow_state.units import convert_length, convert_pressure, convert_temperature, convert_velocity
 
@@ -81,7 +85,7 @@ def _build_state(
     mach: float | None,
     uvel: float | None,
     gas: PerfectGas,
-    transport: Sutherland | None,
+    transport: TransportModel | None,
     pr: float | None,
     lref: float,
     notes: str | None,
@@ -140,7 +144,7 @@ def _build_state(
 
     return FlowState(
         gas_model=gas.name,
-        transport_model=transport.name if transport else None,
+        transport_model=transport_model_to_spec(transport) if transport else None,
         pres=pres,
         temp=temp,
         dens=dens,
@@ -178,6 +182,7 @@ def _build_state(
 #   - A tuple with units: pres=(14.7, "psi"), temp=(25, "C")
 # This allows solve() to accept mixed units without manual conversion.
 ValueWithUnit = float | tuple[float, str]
+
 
 # --------------------------------------------------
 # parse value helper function for solve() to handle ValueWithUnit inputs
@@ -328,7 +333,7 @@ def solve(
 
     provenance = {
         "builder": "solve",
-        "inputs": {k: tuple_to_list(v) for k, v in raw_inputs.items()}
+        "inputs": {k: tuple_to_list(v) for k, v in raw_inputs.items()},
     }
 
     # parse values with units
@@ -345,6 +350,7 @@ def solve(
     # also sets transport to the gas-matched default if caller did not provide one
     if isinstance(gas, str):
         from flow_state.gas.registry import get_gas
+
         gas, default_transport = get_gas(gas)
         if transport is None:
             transport = default_transport
@@ -376,19 +382,69 @@ def solve(
     if has_re1:
         # re1 + temp + mach -> solve for pres
         if has_temp and has_mach and not has_pres:
-            return from_re1_temp_mach(re1, temp, mach, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_re1_temp_mach(
+                re1,
+                temp,
+                mach,
+                gas,
+                transport,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # re1 + pres + mach -> solve for temp
         if has_pres and has_mach and not has_temp:
-            return from_re1_pres_mach(re1, pres, mach, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_re1_pres_mach(
+                re1,
+                pres,
+                mach,
+                gas,
+                transport,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # re1 + pres_stag + temp_stag -> solve for mach
         if has_pres_stag and has_temp_stag:
-            return from_re1_pres_stag_temp_stag(re1, pres_stag, temp_stag, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_re1_pres_stag_temp_stag(
+                re1,
+                pres_stag,
+                temp_stag,
+                gas,
+                transport,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # re1 + mach + temp_stag -> convert stag to static temp, then solve for pres
         if has_mach and has_temp_stag and not has_pres_stag:
-            return from_re1_mach_temp_stag(re1, mach, temp_stag, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_re1_mach_temp_stag(
+                re1,
+                mach,
+                temp_stag,
+                gas,
+                transport,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # re1 + mach -> solve for conditions for standard atmosphere (need to iterate for altitude that yields target re1)
         if has_mach and not has_altitude and not has_pres and not has_temp:
-            return from_mach_re1_atmosphere(re1, mach, gas, transport, atm=atm, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_mach_re1_atmosphere(
+                re1,
+                mach,
+                gas,
+                transport,
+                atm=atm,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # currently unavailable combinations
         raise ValueError(
             "Invalid input combination with re1. Valid combinations:\n"
@@ -402,7 +458,17 @@ def solve(
     if has_altitude:
         # altitude + mach -> solve for static conditions
         if has_mach:
-            return from_mach_altitude_atmosphere(altitude, mach, gas, transport, atm=atm, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_mach_altitude_atmosphere(
+                altitude,
+                mach,
+                gas,
+                transport,
+                atm=atm,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # currently unavailable combinations
         raise ValueError("altitude requires mach to be specified.")
 
@@ -410,7 +476,17 @@ def solve(
     if has_pres_stag or has_temp_stag:
         # stagnation + mach -> solve for static conditions
         if has_mach and has_pres_stag and has_temp_stag:
-            return from_mach_pres_stag_temp_stag(mach, pres_stag, temp_stag, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+            return from_mach_pres_stag_temp_stag(
+                mach,
+                pres_stag,
+                temp_stag,
+                gas,
+                transport,
+                lref=lref_si,
+                pr=pr,
+                notes=notes,
+                provenance=provenance,
+            )
         # currently unavailable combinations
         raise ValueError("Stagnation conditions require mach, pres_stag, and temp_stag.")
 
@@ -420,7 +496,17 @@ def solve(
         if has_uvel and not has_mach:
             a = gas.sound_speed(temp)
             mach = uvel / a if a > 0 else None
-        return from_mach_pres_temp(mach, pres, temp, gas, transport, lref=lref_si, pr=pr, notes=notes, provenance=provenance)
+        return from_mach_pres_temp(
+            mach,
+            pres,
+            temp,
+            gas,
+            transport,
+            lref=lref_si,
+            pr=pr,
+            notes=notes,
+            provenance=provenance,
+        )
 
     # no valid combination found
     raise ValueError(
@@ -514,7 +600,9 @@ def from_mach_pres_stag_temp_stag(
     if provenance is None:
         provenance = {"inputs": {"mach": mach, "pres_stag": pres_stag, "temp_stag": temp_stag}}
     provenance["builder"] = "from_mach_pres_stag_temp_stag"
-    return _build_state(static.pres, static.temp, mach, None, gas, transport, pr, lref, notes, provenance)
+    return _build_state(
+        static.pres, static.temp, mach, None, gas, transport, pr, lref, notes, provenance
+    )
 
 
 # --------------------------------------------------
@@ -554,8 +642,18 @@ def from_mach_altitude_atmosphere(
         provenance = {"inputs": {"altitude": altitude, "mach": mach}}
     provenance["builder"] = "from_mach_altitude_atmosphere"
     return _build_state(
-        atm.pres, atm.temp, mach, None, gas, transport, pr, lref, notes, provenance,
-        altitude=altitude, atmosphere_model=atm_name,
+        atm.pres,
+        atm.temp,
+        mach,
+        None,
+        gas,
+        transport,
+        pr,
+        lref,
+        notes,
+        provenance,
+        altitude=altitude,
+        atmosphere_model=atm_name,
     )
 
 
@@ -596,6 +694,7 @@ def from_re1_temp_mach(
     Returns:
         FlowState with pressure solved from target Re1.
     """
+
     def residual(pres: float) -> float:
         return _compute_re1(pres, temp, mach, gas, transport) - re1
 
@@ -643,6 +742,7 @@ def from_re1_pres_mach(
     Returns:
         FlowState with temperature solved from target Re1.
     """
+
     def residual(temp: float) -> float:
         return _compute_re1(pres, temp, mach, gas, transport) - re1
 
@@ -696,7 +796,9 @@ def from_re1_mach_temp_stag(
     provenance["builder"] = "from_re1_mach_temp_stag"
 
     # delegate to re1+temp+mach solver
-    return from_re1_temp_mach(re1, temp, mach, gas, transport, lref=lref, pr=pr, notes=notes, provenance=provenance)
+    return from_re1_temp_mach(
+        re1, temp, mach, gas, transport, lref=lref, pr=pr, notes=notes, provenance=provenance
+    )
 
 
 # --------------------------------------------------
@@ -749,7 +851,9 @@ def from_re1_pres_stag_temp_stag(
     if provenance is None:
         provenance = {"inputs": {"re1": re1, "pres_stag": pres_stag, "temp_stag": temp_stag}}
     provenance["builder"] = "from_re1_pres_stag_temp_stag"
-    return _build_state(static.pres, static.temp, mach, None, gas, transport, pr, lref, notes, provenance)
+    return _build_state(
+        static.pres, static.temp, mach, None, gas, transport, pr, lref, notes, provenance
+    )
 
 
 # --------------------------------------------------
@@ -801,6 +905,16 @@ def from_mach_re1_atmosphere(
         provenance = {"inputs": {"re1": re1, "mach": mach}}
     provenance["builder"] = "from_mach_re1_atmosphere"
     return _build_state(
-        atm.pres, atm.temp, mach, None, gas, transport, pr, lref, notes, provenance,
-        altitude=altitude, atmosphere_model=atm_name,
+        atm.pres,
+        atm.temp,
+        mach,
+        None,
+        gas,
+        transport,
+        pr,
+        lref,
+        notes,
+        provenance,
+        altitude=altitude,
+        atmosphere_model=atm_name,
     )

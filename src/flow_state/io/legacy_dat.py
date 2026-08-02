@@ -55,7 +55,11 @@ def write_flow_conditions_dat(
     lines: list[str] = []
 
     # transport model label
-    transport_label = state.transport_model or "none"
+    if state.transport_model is None:
+        transport_label = "none"
+    else:
+        transport_label = state.transport_model.model_type
+
     if "sutherland" in transport_label.lower():
         viscosity_label = "Standard Sutherland Law"
     else:

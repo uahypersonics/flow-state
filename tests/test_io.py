@@ -12,12 +12,12 @@ from pathlib import Path
 
 import pytest
 
-from flow_state.io import read_config, write_json
+from flow_state.io import read_config, read_json, write_json
 from flow_state.io.legacy_dat import write_flow_conditions_dat
 from flow_state.io.print_summary import summary
 from flow_state.io.write_data import write_toml
 from flow_state.solvers import solve
-from flow_state.transport import Sutherland
+from flow_state.transport import Sutherland, transport_model_from_dict
 
 # --------------------------------------------------
 # tests for write_json
@@ -43,7 +43,17 @@ class TestWriteJSON:
             assert data["temp"] == [300.0, "K"]
             assert data["mach"] == [2.0, "-"]
             assert "gas_model" in data
-            assert "transport_model" in data
+            assert data["transport_model"] == {
+                "type": "sutherland",
+                "parameters": {
+                    "mu_ref": 1.716e-5,
+                    "T_ref": 273.15,
+                    "S": 110.4,
+                },
+            }
+
+            reconstructed_model = transport_model_from_dict(data["transport_model"])
+            assert reconstructed_model.mu(300.0) == pytest.approx(state.mu)
 
     def test_json_includes_provenance(self) -> None:
         """verify provenance is included in JSON output"""
@@ -59,6 +69,68 @@ class TestWriteJSON:
             assert "provenance" in data
             assert data["provenance"]["builder"] == "from_mach_pres_temp"
             assert "inputs" in data["provenance"]
+
+
+# --------------------------------------------------
+# tests for read_json
+# --------------------------------------------------
+
+
+class TestReadJSON:
+    """tests for JSON input"""
+
+    def test_flow_state_round_trip(self, tmp_path: Path) -> None:
+        """read_json reconstructs every field written by write_json"""
+        state = solve(
+            mach=2.0,
+            altitude=10000.0,
+            transport=Sutherland.air(),
+            notes="round-trip test",
+        )
+        path = tmp_path / "flow_state.json"
+
+        # write and reconstruct the complete state
+        write_json(state, path)
+        reconstructed_state = read_json(path)
+
+        # check the complete public serialized representation
+        assert reconstructed_state.to_dict() == state.to_dict()
+
+    def test_flow_state_from_dict_without_transport(self) -> None:
+        """from_dict preserves optional null fields"""
+        state = solve(mach=2.0, pres=101325.0, temp=300.0)
+        state_data = state.to_dict()
+        state_data["transport_model"] = None
+        state_data["mu"] = None
+        state_data["nu"] = None
+        state_data["re1"] = None
+        state_data["kolmogorov"] = None
+        state_data["taylor"] = None
+
+        # reconstruct directly from the canonical dictionary
+        reconstructed_state = type(state).from_dict(state_data)
+
+        assert reconstructed_state.to_dict() == state_data
+        assert reconstructed_state.transport_model is None
+        assert reconstructed_state.kolmogorov is None
+        assert reconstructed_state.taylor is None
+
+    def test_from_dict_rejects_wrong_unit(self) -> None:
+        """from_dict rejects values carrying incompatible units"""
+        state = solve(mach=2.0, pres=101325.0, temp=300.0)
+        state_data = state.to_dict()
+        state_data["temp"] = [300.0, "Pa"]
+
+        with pytest.raises(ValueError, match="temp must use unit 'K'"):
+            type(state).from_dict(state_data)
+
+    def test_read_json_rejects_non_object_root(self, tmp_path: Path) -> None:
+        """read_json rejects JSON documents that cannot represent a FlowState"""
+        path = tmp_path / "flow_state.json"
+        path.write_text("[]", encoding="utf-8")
+
+        with pytest.raises(TypeError, match="JSON root must be an object"):
+            read_json(path)
 
 
 # --------------------------------------------------
@@ -208,7 +280,9 @@ class TestLegacyDat:
 class TestWriteTOML:
     """tests for TOML output"""
 
-    @pytest.mark.skip(reason="write_toml broken: to_dict() contains None values that tomli_w cannot serialize")
+    @pytest.mark.skip(
+        reason="write_toml broken: to_dict() contains None values that tomli_w cannot serialize"
+    )
     def test_write_toml_basic(self) -> None:
         """write a state to TOML and verify file exists"""
         # use a full solve with all fields populated to avoid None serialization issues

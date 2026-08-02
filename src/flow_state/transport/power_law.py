@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 # --------------------------------------------------
@@ -28,7 +29,6 @@ class PowerLaw:
         mu_ref: Reference viscosity [Pa s]
         T_ref: Reference temperature [K]
         m: Power exponent [-] (typically 0.5 to 1.0)
-        name: Model identifier
     """
 
     # --------------------------------------------------
@@ -37,7 +37,8 @@ class PowerLaw:
     mu_ref: float
     T_ref: float
     m: float
-    name: str = "power_law"
+
+    model_type: ClassVar[str] = "power_law"
 
     # --------------------------------------------------
     # class methods for standard gases
@@ -50,7 +51,7 @@ class PowerLaw:
     @classmethod
     def air(cls, m: float = 0.76) -> PowerLaw:
         """Power law for air with specified exponent (default m=0.76)."""
-        return cls(mu_ref=1.716e-5, T_ref=273.15, m=m, name="power_law_air")
+        return cls(mu_ref=1.716e-5, T_ref=273.15, m=m)
 
     # --------------------------------------------------
     # methods to compute viscosity

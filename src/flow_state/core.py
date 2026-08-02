@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from flow_state.transport import TransportSpec
 from flow_state.turbulence import KolmogorovScales, TaylorScales
 
 # --------------------------------------------------
@@ -99,9 +100,9 @@ class FlowState:
     # dataclass fields
     # --------------------------------------------------
 
-    # model names (strings, not objects)
+    # model definitions
     gas_model: str
-    transport_model: str | None
+    transport_model: TransportSpec | None
 
     # thermodynamic state
     pres: float
@@ -154,6 +155,7 @@ class FlowState:
     def __str__(self) -> str:
         """Return a human-readable summary."""
         from flow_state.io.print_summary import summary
+
         return summary(self)
 
     def __repr__(self) -> str:
@@ -187,6 +189,143 @@ class FlowState:
             return None
         return [value, _UNITS[key]]
 
+    @staticmethod
+    def _value_from_unit_pair(
+        data: dict[str, Any],
+        key: str,
+        *,
+        required: bool,
+    ) -> float | None:
+        """Extract a numeric value from a canonical ``[value, unit]`` pair."""
+
+        # read
+        value_with_unit = data[key]
+
+        # allow null only for optional FlowState fields
+        if value_with_unit is None:
+            if required:
+                raise TypeError(f"{key} must be a [value, unit] pair, not null")
+            value = None
+        else:
+            # validate the serialized pair structure
+            if not isinstance(value_with_unit, list) or len(value_with_unit) != 2:
+                raise TypeError(f"{key} must be a [value, unit] pair or null")
+
+            raw_value, unit = value_with_unit
+            expected_unit = _UNITS[key]
+            if unit != expected_unit:
+                raise ValueError(f"{key} must use unit {expected_unit!r}, got {unit!r}")
+            if isinstance(raw_value, bool) or not isinstance(raw_value, (int, float)):
+                raise TypeError(f"{key} value must be numeric")
+
+            value = float(raw_value)
+
+        return value
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> FlowState:
+        """Build a FlowState from its canonical serialized dictionary.
+
+        Args:
+            data: Dictionary produced by :meth:`FlowState.to_dict`.
+
+        Returns:
+            Reconstructed flow state with numeric values in SI units.
+
+        Raises:
+            KeyError: If a required serialized field is missing.
+            TypeError: If a field does not have the expected serialized type.
+            ValueError: If a numeric field carries an unexpected unit.
+        """
+
+        # validate model definitions
+        gas_model = data["gas_model"]
+        if not isinstance(gas_model, str):
+            raise TypeError("gas_model must be a string")
+
+        transport_model_data = data["transport_model"]
+        if transport_model_data is None:
+            transport_model = None
+        elif isinstance(transport_model_data, dict):
+            transport_model = TransportSpec.from_dict(transport_model_data)
+        else:
+            raise TypeError("transport_model must be a dictionary or null")
+
+        # reconstruct nested turbulence scales
+        kolmogorov_data = data["kolmogorov"]
+        if kolmogorov_data is None:
+            kolmogorov = None
+        elif isinstance(kolmogorov_data, dict):
+            kolmogorov = KolmogorovScales(
+                eta=cls._value_from_unit_pair(kolmogorov_data, "eta", required=True),
+                tau=cls._value_from_unit_pair(kolmogorov_data, "tau", required=True),
+                vel=cls._value_from_unit_pair(kolmogorov_data, "vel", required=True),
+            )
+        else:
+            raise TypeError("kolmogorov must be a dictionary or null")
+
+        taylor_data = data["taylor"]
+        if taylor_data is None:
+            taylor = None
+        elif isinstance(taylor_data, dict):
+            taylor = TaylorScales(
+                lmbda=cls._value_from_unit_pair(taylor_data, "lmbda", required=True),
+                re_lambda=cls._value_from_unit_pair(
+                    taylor_data,
+                    "re_lambda",
+                    required=True,
+                ),
+            )
+        else:
+            raise TypeError("taylor must be a dictionary or null")
+
+        # validate metadata fields that are not encoded as unit pairs
+        atmosphere_model = data["atmosphere_model"]
+        if atmosphere_model is not None and not isinstance(atmosphere_model, str):
+            raise TypeError("atmosphere_model must be a string or null")
+
+        notes = data["notes"]
+        if notes is not None and not isinstance(notes, str):
+            raise TypeError("notes must be a string or null")
+
+        provenance = data["provenance"]
+        if provenance is not None and not isinstance(provenance, dict):
+            raise TypeError("provenance must be a dictionary or null")
+
+        # build the complete state from canonical SI values
+        state = cls(
+            gas_model=gas_model,
+            transport_model=transport_model,
+            pres=cls._value_from_unit_pair(data, "pres", required=True),
+            temp=cls._value_from_unit_pair(data, "temp", required=True),
+            dens=cls._value_from_unit_pair(data, "dens", required=True),
+            a=cls._value_from_unit_pair(data, "a", required=True),
+            mach=cls._value_from_unit_pair(data, "mach", required=False),
+            uvel=cls._value_from_unit_pair(data, "uvel", required=False),
+            mu=cls._value_from_unit_pair(data, "mu", required=False),
+            nu=cls._value_from_unit_pair(data, "nu", required=False),
+            re1=cls._value_from_unit_pair(data, "re1", required=False),
+            cp=cls._value_from_unit_pair(data, "cp", required=True),
+            cv=cls._value_from_unit_pair(data, "cv", required=True),
+            gamma=cls._value_from_unit_pair(data, "gamma", required=True),
+            r_gas=cls._value_from_unit_pair(data, "r_gas", required=True),
+            pr=cls._value_from_unit_pair(data, "pr", required=False),
+            lref=cls._value_from_unit_pair(data, "lref", required=True),
+            tref=cls._value_from_unit_pair(data, "tref", required=False),
+            pres_stag=cls._value_from_unit_pair(data, "pres_stag", required=False),
+            temp_stag=cls._value_from_unit_pair(data, "temp_stag", required=False),
+            dens_stag=cls._value_from_unit_pair(data, "dens_stag", required=False),
+            enth_stag=cls._value_from_unit_pair(data, "enth_stag", required=False),
+            kolmogorov=kolmogorov,
+            taylor=taylor,
+            altitude=cls._value_from_unit_pair(data, "altitude", required=False),
+            atmosphere_model=atmosphere_model,
+            notes=notes,
+            provenance=provenance,
+        )
+
+        return state
+
     def to_dict(self) -> dict[str, Any]:
         """
         Convert FlowState to a dictionary for JSON serialization.
@@ -195,6 +334,7 @@ class FlowState:
         and downstream tool safety. Nested NamedTuples (kolmogorov, taylor)
         are converted to dicts with the same format.
         """
+
         # helper for kolmogorov/taylor nested dicts
         def scales_dict(scales, keys):
             if scales is None:
@@ -202,9 +342,11 @@ class FlowState:
             return {k: self._with_unit(k, getattr(scales, k)) for k in keys}
 
         return {
-            # model info (strings, no units)
+            # model information
             "gas_model": self.gas_model,
-            "transport_model": self.transport_model,
+            "transport_model": (
+                self.transport_model.to_dict() if self.transport_model is not None else None
+            ),
             # static conditions
             "pres": self._with_unit("pres", self.pres),
             "temp": self._with_unit("temp", self.temp),

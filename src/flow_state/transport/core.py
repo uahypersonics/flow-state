@@ -5,7 +5,46 @@
 # --------------------------------------------------
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Protocol
+
+
+# --------------------------------------------------
+# TransportSpec: serializable transport model definition
+# --------------------------------------------------
+@dataclass(frozen=True, slots=True)
+class TransportSpec:
+    """Canonical transport model specification."""
+
+    model_type: str
+    parameters: dict[str, float]
+
+    def to_dict(self) -> dict[str, object]:
+        """Convert the transport specification to serialized data."""
+
+        spec_dict = {
+            "type": self.model_type,
+            "parameters": dict(self.parameters),
+        }
+
+        return spec_dict
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> TransportSpec:
+        """Build a transport specification from serialized data."""
+
+        model_type = str(data["type"]).strip().lower()
+        raw_parameters = data["parameters"]
+        if not isinstance(raw_parameters, dict):
+            raise TypeError("transport_model.parameters must be a dictionary")
+
+        parameters = {str(key): float(value) for key, value in raw_parameters.items()}
+        spec = cls(
+            model_type=model_type,
+            parameters=parameters,
+        )
+
+        return spec
 
 
 # --------------------------------------------------
@@ -32,8 +71,8 @@ class TransportModel(Protocol):
     # required attributes
     # --------------------------------------------------
 
-    # transport model name (e.g. "sutherland", "power_law", "constant")
-    name: str
+    # transport law identifier (e.g. "sutherland" or "power_law")
+    model_type: str
 
     # --------------------------------------------------
     # required methods
