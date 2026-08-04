@@ -101,11 +101,14 @@ nav:
   - Home: index.md
   - Installation: installation.md
   - User Guide:
-    - user-guide/index.md
+    - Overview: user-guide/index.md
+    - Workflow: user-guide/workflow.md
+    - Configuration:
+      - Overview: user-guide/configuration.md
+      - Config Files: user-guide/config-files.md
+      - Output Formats: user-guide/output.md
     - Basic Usage: user-guide/basic-usage.md
     - CLI: user-guide/cli.md
-    - Config Files: user-guide/config-files.md
-    - Output Formats: user-guide/output.md
   - Theory:
     - theory/index.md
     - Gas Properties: theory/gas-properties.md
@@ -115,6 +118,7 @@ nav:
     - Transport Models: theory/transport.md
     - Atmosphere Models: theory/atmosphere-models.md
     - Atmosphere Comparison: theory/atmosphere-comparison.md
+  - CLI Reference: cli-reference.md
   - API Reference:
     - api/index.md
     - Architecture: api/architecture.md
@@ -122,5 +126,9 @@ nav:
     - Solvers: api/solvers.md
     - Atmosphere: api/atmosphere.md
     - Transport: api/transport.md
+  - Validation and Verification:
+    - vnv/index.md
+    - Verification: vnv/verification/index.md
+    - Validation: vnv/validation/index.md
   - Examples: examples.md
   - Nomenclature: nomenclature.md
