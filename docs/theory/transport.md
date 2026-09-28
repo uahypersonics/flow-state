@@ -6,15 +6,15 @@ Viscosity models available in `flow_state`. All models compute [dynamic viscosit
 
 | Model | Class | Gases | Reference |
 |-------|-------|-------|-----------|
-| [Sutherland's Law](#sutherland) | `Sutherland` | Air, N2, Custom | [@sutherland1893] |
-| [Sutherland's Law with LTC](#sutherland_ltc) | `SutherlandLowTemp` | Air | [@mack1969] |
+| [Sutherland's Law](#sutherland) | `Sutherland` | Air, N2, Custom | [^sutherland1893] |
+| [Sutherland's Law with LTC](#sutherland_ltc) | `SutherlandLowTemp` | Air | [^mack1969] |
 | [Sutherland's Law with LTC (Blended)](#sutherland_blended) | `SutherlandBlended` | Air | - |
-| [Keyes](#keyes) | `Keyes` | Air, N2 | [@keyes1951] |
-| [Power Law](#power-law) | `PowerLaw` | Air | [@white2006] |
+| [Keyes](#keyes) | `Keyes` | Air, N2 | [^keyes1951] |
+| [Power Law](#power-law) | `PowerLaw` | Air | [^white2006] |
 
 ## Sutherland's Law {#sutherland}
 
-The standard Sutherland formula [@sutherland1893]:
+The standard Sutherland formula [^sutherland1893]:
 
 \[
 \mu(T) = \mu_{\text{ref}} \left( \frac{T}{T_{\text{ref}}} \right)^{3/2} \frac{T_{\text{ref}} + S}{T + S}
@@ -35,7 +35,7 @@ Valid for moderate temperatures (~100 K to ~1900 K for air).
 
 ## Sutherland's Law with Low-Temperature Correction (LTC) {#sutherland_ltc}
 
-Prevents unphysical viscosity at very low temperatures where Sutherland's law breaks down [@mack1969]:
+Prevents unphysical viscosity at very low temperatures where Sutherland's law breaks down [^mack1969]:
 
 \[
 \mu(T) = \begin{cases}
@@ -106,7 +106,7 @@ The temperature derivative in the polynomial region (\(T_1 \leq T \leq T_2\)) is
 
 ## Keyes Model {#keyes}
 
-High-temperature viscosity law [@keyes1951] [@priebe2012] [@roy2006]:
+High-temperature viscosity law [^keyes1951] [^priebe2012] [^roy2006]:
 
 \[
 \mu(T) = \frac{a_0 \sqrt{T}}{1 + a_1 \cdot 10^{-a_2/T} / T}
@@ -129,7 +129,7 @@ where \(D = 1 + a_1 \cdot 10^{-a_2/T} / T\) and \(D' = a_1 \cdot 10^{-a_2/T} (a_
 
 ## Power Law {#power-law}
 
-Simple power-law model [@white2006]:
+Simple power-law model [^white2006]:
 
 \[
 \mu(T) = \mu_{\text{ref}} \left( \frac{T}{T_{\text{ref}}} \right)^m
@@ -145,4 +145,28 @@ Useful for simplified analyses or specific temperature ranges. Typical exponent 
 
 ## References
 
-\bibliography
+[^sutherland1893]: Sutherland, William. "The viscosity of gases and molecular
+	force." *The London, Edinburgh, and Dublin Philosophical Magazine and
+	Journal of Science* 36(223), 507-531, 1893.
+	[doi:10.1080/14786449308620508](https://doi.org/10.1080/14786449308620508).
+
+[^mack1969]: Mack, Leslie M. *Boundary-Layer Stability Theory*. Jet Propulsion
+	Laboratory, Document ID 19900029782, 1969.
+	[View report](https://ntrs.nasa.gov/citations/19900029782).
+
+[^keyes1951]: Keyes, Frederick G. "A Summary of Viscosity and Heat Conduction
+	Data for He, A, H2, O2, N2, CO, CO2, H2O and Air." *Transactions of the
+	American Society of Mechanical Engineers* 73, 589-596, 1951.
+	[doi:10.1115/1.4016335](https://doi.org/10.1115/1.4016335).
+
+[^priebe2012]: Priebe, Stephan and Martin, M. Pino. "Low-frequency unsteadiness
+	in shock wave-turbulent boundary layer interaction." *Journal of Fluid
+	Mechanics* 699, 1-49, 2012.
+	[doi:10.1017/jfm.2011.560](https://doi.org/10.1017/jfm.2011.560).
+
+[^roy2006]: Roy, Christopher J. and Blottner, Frederick G. "Review and
+	assessment of turbulence models for hypersonic flows." *Progress in
+	Aerospace Sciences* 42(7-8), 469-530, 2006.
+	[doi:10.1016/j.paerosci.2006.12.002](https://doi.org/10.1016/j.paerosci.2006.12.002).
+
+[^white2006]: White, Frank M. *Viscous Fluid Flow*. 3rd ed., McGraw-Hill, 2006.

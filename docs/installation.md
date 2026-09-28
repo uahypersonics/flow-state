@@ -32,7 +32,7 @@ This includes:
 
 - [pytest](https://docs.pytest.org/) and [pytest-cov](https://pytest-cov.readthedocs.io/) for testing
 - [ruff](https://docs.astral.sh/ruff/) for linting
-- [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) for documentation
+- [Zensical](https://zensical.org/) for documentation
 
 ## Verify Installation
 

@@ -6,7 +6,7 @@ Compressible flow state calculations for Python.
 [![codecov](https://codecov.io/gh/uahypersonics/flow-state/branch/main/graph/badge.svg)](https://codecov.io/gh/uahypersonics/flow-state)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18926470.svg)](https://doi.org/10.5281/zenodo.18926470)
 [![PyPI](https://img.shields.io/pypi/v/flowstate)](https://pypi.org/project/flowstate/)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://uahypersonics.github.io/flow-state/)
+[![Docs](https://img.shields.io/badge/docs-zensical-blue)](https://uahypersonics.github.io/flow-state/)
 [![Webapp](https://img.shields.io/badge/webapp-streamlit-red)](https://flow-state-calculator.streamlit.app/)
 [![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-≥3.11-blue.svg)](https://www.python.org/downloads/)

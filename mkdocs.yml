@@ -58,8 +58,6 @@ theme:
 # --------------------------------------------------
 plugins:
   - search
-  - bibtex:
-      bib_file: "docs/refs.bib"
 
 # --------------------------------------------------
 # markdown extensions for syntax highlighting, math, etc.

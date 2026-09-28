@@ -8,12 +8,12 @@ For usage examples, see [Examples](../examples.md#flight-conditions) and [Config
 
 | Model | Function/Class | Altitude Range | Lat/Season | Reference |
 |-------|----------------|----------------|------------|----------|
-| [USSA76](#ussa76) | `ussa76()` | 0–86 km | No | [@ussa1976] |
-| [CIRA86](#cira86) | `CIRA86()` | 0–120 km | Yes | [@cira1986] |
+| [USSA76](#ussa76) | `ussa76()` | 0–86 km | No | [^ussa1976] |
+| [CIRA86](#cira86) | `CIRA86()` | 0–120 km | Yes | [^cira1986] |
 
 ## US Standard Atmosphere 1976 (USSA76) {#ussa76}
 
-The default model [@ussa1976]. Defines a single reference atmosphere independent of latitude and season.
+The default model [^ussa1976]. Defines a single reference atmosphere independent of latitude and season.
 
 - Valid from 0 to 86 km (geometric altitude)
 - Piecewise linear temperature profile with defined lapse rates
@@ -53,7 +53,7 @@ where \(g_0 = 9.80665\) m/s² is standard gravity and \(R = 287.05\) J/(kg·K).
 
 ## COSPAR International Reference Atmosphere (CIRA86) {#cira86}
 
-Latitude and season-dependent model [@cira1986].
+Latitude and season-dependent model [^cira1986].
 
 - Valid from 0 to 120 km altitude
 - Tabulated data interpolated for latitude (0–80°N, 10° increments) and month (1–12)
@@ -82,4 +82,11 @@ Parameters:
 
 ## References
 
-\bibliography
+[^ussa1976]: NOAA, NASA, and USAF. *U.S. Standard Atmosphere, 1976*.
+	NOAA-S/T 76-1562, 1976.
+	[View report](https://www.ngdc.noaa.gov/stp/space-weather/online-publications/miscellaneous/us-standard-atmosphere-1976/us-standard-atmosphere_st76-1562_noaa.pdf).
+
+[^cira1986]: Rees, D., Barnett, J. J., and Labitzke, K. *COSPAR International
+	Reference Atmosphere: 1986. Part II: Middle Atmosphere Models*. Advances in
+	Space Research 10(12), 1990.
+	[doi:10.1016/0273-1177(90)90386-E](https://doi.org/10.1016/0273-1177(90)90386-E).
