@@ -1,8 +1,8 @@
 """Bundled example config files for the flow-state CLI.
 
 Provides a registry mapping short names to TOML files stored as
-package data under flow_state/examples/. The CLI ``examples`` command
-uses this module to list available examples and copy them to the CWD.
+package data under flow_state/examples/. Applications can use this module
+to list available examples and read their contents.
 
 Adding a new example
 --------------------

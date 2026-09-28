@@ -1,0 +1,32 @@
+"""Generate a starter flow-state configuration."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Annotated
+
+import typer
+
+from flow_state.cli.constants import DEFAULT_CONFIG
+from flow_state.cli.templates import CONFIG_TEMPLATE
+
+
+def cmd_init(
+    output: Annotated[
+        Path,
+        typer.Option("--output", "-o", help="Output config file path"),
+    ] = Path(DEFAULT_CONFIG),
+    force: Annotated[
+        bool,
+        typer.Option("--force", "-f", help="Overwrite existing file"),
+    ] = False,
+) -> None:
+    """Generate a documented template configuration file."""
+
+    if output.exists() and not force:
+        typer.echo(f"Error: {output} already exists. Use --force to overwrite", err=True)
+        raise typer.Exit(1)
+
+    output.write_text(CONFIG_TEMPLATE)
+    typer.echo(f"Created {output}")
+    typer.echo("Edit the file, then run: flow-state solve")
