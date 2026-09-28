@@ -103,4 +103,5 @@ The GitHub Actions workflow will automatically build and publish to PyPI via Tru
 
 ## License
 
-BSD-3-Clause. See [LICENSE](LICENSE) for details.
+GNU General Public License v3.0 or later. See [LICENSE](LICENSE) for the
+complete license terms.

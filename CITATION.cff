@@ -11,7 +11,7 @@ authors:
 repository-code: "https://github.com/uahypersonics/flow-state"
 url: "https://uahypersonics.github.io/flow-state"
 doi: "10.5281/zenodo.18926470"
-license: BSD-3-Clause
+license: GPL-3.0-or-later
 keywords:
   - compressible flow
   - aerodynamics
