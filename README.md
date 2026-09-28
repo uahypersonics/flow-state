@@ -5,17 +5,17 @@ Compressible flow state calculations for Python.
 [![Test](https://github.com/uahypersonics/flow-state/actions/workflows/test.yml/badge.svg)](https://github.com/uahypersonics/flow-state/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/uahypersonics/flow-state/branch/main/graph/badge.svg)](https://codecov.io/gh/uahypersonics/flow-state)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18926470.svg)](https://doi.org/10.5281/zenodo.18926470)
-[![PyPI](https://img.shields.io/pypi/v/flow-state-calculator)](https://pypi.org/project/flow-state-calculator/)
+[![PyPI](https://img.shields.io/pypi/v/flowstate)](https://pypi.org/project/flowstate/)
 [![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://uahypersonics.github.io/flow-state/)
 [![Webapp](https://img.shields.io/badge/webapp-streamlit-red)](https://flow-state-calculator.streamlit.app/)
-[![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-≥3.11-blue.svg)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ## Install
 
 ```bash
-pip install flow-state-calculator
+pip install flowstate
 ```
 
 ## Quick Start
@@ -86,7 +86,7 @@ This project uses [Semantic Versioning](https://semver.org/) (`vMAJOR.MINOR.PATC
 - **MINOR** (`v0.3.0`, `v0.4.0`): New features, backward-compatible
 - **PATCH** (`v0.3.1`, `v0.3.2`): Bug fixes, minor corrections
 
-To publish a new version to [PyPI](https://pypi.org/project/flow-state-calculator/):
+To publish a new version to [PyPI](https://pypi.org/project/flowstate/):
 
 1. Regenerate the API architecture diagram:
    ```bash

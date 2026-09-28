@@ -10,9 +10,9 @@
 
 ## Quick Start
 
-Install the [pypi package](https://pypi.org/project/flow-state-calculator/) (see [Installation](installation.md) for detailed instructions).
+Install the [PyPI package](https://pypi.org/project/flowstate/) (see [Installation](installation.md) for detailed instructions).
 ```bash
-pip install flow-state-calculator
+pip install flowstate
 ```
 
 Use `flow_state` package (see [User Guide](user-guide/index.md) for detailed examples)
