@@ -8,6 +8,7 @@ Modules:
     legacy_dat     - legacy flow_conditions.dat format
 """
 
+from flow_state.io.hdf5 import read_hdf5_attrs
 from flow_state.io.legacy_dat import write_flow_conditions_dat
 from flow_state.io.print_summary import summary
 from flow_state.io.read_config import read_config
@@ -16,6 +17,7 @@ from flow_state.io.write_data import write_json, write_toml
 
 __all__ = [
     "read_config",
+    "read_hdf5_attrs",
     "read_json",
     "write_json",
     "write_toml",

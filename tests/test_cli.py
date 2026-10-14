@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 
+import h5py
+import pytest
 from typer.testing import CliRunner
 
 from flow_state.cli import app, cli
@@ -27,6 +29,7 @@ def test_help_lists_commands_and_panels() -> None:
     assert "Workflow" in result.output
     assert "solve" in result.output
     assert "init" in result.output
+    assert "recover" in result.output
 
 
 def test_version_exits_successfully() -> None:
@@ -96,3 +99,36 @@ def test_solve_direct_options_writes_json(tmp_path) -> None:
     assert f"Wrote {output_path}" in result.output
     output_data = json.loads(output_path.read_text())
     assert output_data["mach"][0] == 2.0
+
+
+def test_recover_writes_flow_conditions_json(tmp_path) -> None:
+    """HDF5 root attributes can reconstruct the canonical JSON output."""
+    input_path = tmp_path / "base_flow.hdf5"
+    output_path = tmp_path / "recovered.json"
+    with h5py.File(input_path, "w") as hdf5_file:
+        hdf5_file.attrs["mach"] = 6.0
+        hdf5_file.attrs["re1"] = 10_000_000.0
+        hdf5_file.attrs["temp_inf"] = 45.73170731707317
+
+    result = runner.invoke(
+        app,
+        ["recover", str(input_path), "--output", str(output_path), "--quiet"],
+    )
+
+    assert result.exit_code == 0
+    assert f"Wrote {output_path}" in result.output
+    output_data = json.loads(output_path.read_text())
+    assert output_data["mach"] == [6.0, "-"]
+    assert output_data["re1"][0] == pytest.approx(10_000_000.0)
+
+
+def test_recover_reports_insufficient_metadata(tmp_path) -> None:
+    """Recovery explains when recognized attributes cannot define a state."""
+    input_path = tmp_path / "base_flow.hdf5"
+    with h5py.File(input_path, "w") as hdf5_file:
+        hdf5_file.attrs["mach"] = 6.0
+
+    result = runner.invoke(app, ["recover", str(input_path)])
+
+    assert result.exit_code == 1
+    assert "does not contain a complete flow-state input combination" in result.output

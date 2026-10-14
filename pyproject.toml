@@ -25,6 +25,7 @@ classifiers = [
 keywords = ["compressible-flow", "aerodynamics", "gas-dynamics", "cfd"]
 
 dependencies = [
+    "h5py>=3.10.0",
     "typer>=0.9.0",
     "tomli-w>=1.0.0",
 ]

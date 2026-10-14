@@ -43,6 +43,7 @@ print(state.pres, state.temp, state.re1)
 ```bash
 flow-state init    # Create a config template
 flow-state solve   # Solve from flow_config.toml
+flow-state recover base_flow.hdf5  # Recover flow_conditions.json from HDF5 metadata
 ```
 
 - API Usage: https://uahypersonics.github.io/flow-state/user_guide/api_usage/

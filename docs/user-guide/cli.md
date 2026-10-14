@@ -18,6 +18,22 @@ flow-state init --force            # overwrite existing
 
 Compute flow state from direct options or a config file.
 
+### `flow-state recover`
+
+Reconstruct `flow_conditions.json` from root attributes stored in an HDF5
+base-flow file:
+
+```bash
+flow-state recover base_flow.hdf5
+flow-state recover base_flow.hdf5 --output recovered_conditions.json --quiet
+```
+
+The command recognizes current attribute names such as `mach`, `re1`,
+`temp_inf`, `pres_inf`, `temp_stag`, and `pres_stag`, as well as legacy
+short names embedded in descriptive attributes such as `m`, `p_inf`, `t_inf`,
+`p0`, and `t0`. It reports an error listing the recognized metadata when the
+file does not contain a complete solver input combination.
+
 ## Direct Options
 
 For quick one-off calculations:

@@ -8,6 +8,7 @@ import typer
 
 from flow_state.cli.callbacks import configure_logging, version_callback
 from flow_state.cli.cmd_init import cmd_init
+from flow_state.cli.cmd_recover import cmd_recover
 from flow_state.cli.cmd_solve import cmd_solve
 
 app = typer.Typer(
@@ -42,6 +43,7 @@ def main(
 
 
 app.command(name="init", rich_help_panel="Workflow")(cmd_init)
+app.command(name="recover", rich_help_panel="Workflow")(cmd_recover)
 app.command(name="solve", rich_help_panel="Calculators")(cmd_solve)
 
 
