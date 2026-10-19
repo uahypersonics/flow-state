@@ -75,7 +75,7 @@ contributors can focus on the physics rather than inventing formatting rules.
 |---|---|---|
 | [PEP 8](https://peps.python.org/pep-0008/) | Code formatting, naming, whitespace | Python standard style guide |
 | [PEP 257](https://peps.python.org/pep-0257/) | Docstring structure (triple-quoted, imperative mood) | Python standard docstring conventions |
-| [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) | Docstring sections (`Parameters`, `Returns`, `Attributes`) | NumPy/SciPy docstring standard — the norm for scientific Python |
+| [Google style](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings) | Docstring sections (`Args`, `Returns`, `Raises`) | Google Python style guide |
 | [Ruff](https://docs.astral.sh/ruff/) | Automated linting and formatting | Enforces PEP 8 compliance automatically |
 | [typing / TYPE_CHECKING](https://docs.python.org/3/library/typing.html#typing.TYPE_CHECKING) | Type hints for IDE support and static analysis | Python standard library |
 
